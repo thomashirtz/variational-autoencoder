@@ -29,11 +29,11 @@ if __name__ == '__main__':
 
     optimizer = torch.optim.Adam(vae.parameters(), lr=learning_rate)
 
+    # Training
     for epoch in range(epochs):
         running_loss = 0.0
 
         for i, (inputs, labels) in enumerate(train_loader):  # noqa
-            labels = labels.to(device)
             inputs = inputs.to(device)
 
             optimizer.zero_grad()
@@ -43,10 +43,9 @@ if __name__ == '__main__':
 
             running_loss += loss.item()
             if i % verbose == verbose-1 or i+1 == len(train_loader):
-                print(f'[{epoch + 1}/{epochs}, {i + 1}/{len(train_loader)}] loss: {running_loss / len(train_dataset):.3f}')
+                print(f'[{epoch + 1}/{epochs}, {i + 1}/{len(train_loader)}] loss: {running_loss:.3f}')
 
-    print('Training Finished.')
-
+    # Displaying the latent space
     with torch.no_grad():
         zs = vae.get_z(train_dataset.data.float().to(device)).data.cpu().numpy()
     targets = train_dataset.targets.cpu().numpy()
