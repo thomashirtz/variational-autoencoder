@@ -60,8 +60,9 @@ class VAE(nn.Module):
         x_reconstructed, mu, log_sigma = self(x)
         reconstruction_loss = nn.functional.binary_cross_entropy(x_reconstructed, x, reduction='sum')  # noqa
         # reconstruction_loss = nn.functional.mse_loss(x_reconstructed, x, reduction='sum')  # noqa
-        kl_divergence = -0.5 * torch.sum(1 + log_sigma - mu.pow(2) - log_sigma.exp())
-        return reconstruction_loss + kl_divergence
+        kl_divergence = -0.5 * torch.sum(1 + log_sigma - mu ** 2 - log_sigma.exp())
+        loss = reconstruction_loss + kl_divergence
+        return loss / x.shape[0]
 
     def get_z(self, x: torch.Tensor) -> torch.Tensor:
         x = x.view(-1, self.shape_flattened)  # maybe not keep
