@@ -62,13 +62,13 @@ class VAE(nn.Module):
     def forward(self, x: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         mu, log_sigma = self.encode(x)
         z = self.reparameterize(mu, log_sigma)
-        return self.decode(z), mu, log_sigma # todo replace with std
+        return self.decode(z), mu, log_sigma  # todo replace with std
 
     def get_loss(self, x: torch.Tensor) -> torch.Tensor:
         x = x.view(-1, *self.shape)
         x_reconstructed, mu, log_sigma = self(x)
         reconstruction_loss = nn.functional.binary_cross_entropy(x_reconstructed, x, reduction='sum')  # noqa
-        # reconstruction_loss = nn.functional.mse_loss(x_reconstructed, x, reduction='mean')  # noqa
+        # reconstruction_loss = nn.functional.mse_loss(x_reconstructed, x, reduction='sum')  # noqa # todo dynamically change reconstruction loss
         kl_divergence = torch.mean(-0.5 * torch.sum(1 + log_sigma - mu ** 2 - log_sigma.exp()))
         loss = reconstruction_loss + kl_divergence
         return loss / x.shape[0]
