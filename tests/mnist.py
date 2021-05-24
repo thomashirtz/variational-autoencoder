@@ -2,62 +2,57 @@ import torch.utils.data
 import matplotlib.pyplot as plt
 from torchvision import datasets, transforms
 
-from variational_autoencoder import VAE
-from variational_autoencoder import get_device
+from variational_autoencoder import train
 
 
 if __name__ == '__main__':
 
-    epochs = 10
+    epochs = 1
     batch_size = 128
     latent_dimension = 2
     learning_rate = 0.001
 
-    verbose = 256
-    download = False
-
     seed = 9
-    torch.manual_seed(seed)
+    verbose = 256
+    download = False  # can be set to false after downloading it
+    load_model = False
+    save_model = True
+    checkpoint_directory = '../checkpoints/'
+    file_name = None  # 'vae.pt'
 
-    train_dataset = datasets.MNIST(root='MNIST', download=download, train=True, transform=transforms.ToTensor())
-    test_dataset = datasets.MNIST(root='MNIST', download=download, train=False, transform=transforms.ToTensor())
+    dataset = datasets.MNIST(root='../data/MNIST', download=download, train=True, transform=transforms.ToTensor())
 
-    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-    test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+    vae = train(dataset=dataset, epochs=epochs, load_model=load_model, latent_dimension=latent_dimension,
+                learning_rate=learning_rate, batch_size=batch_size, seed=seed, verbose=verbose,
+                checkpoint_directory=checkpoint_directory, file_name=file_name, save_model=save_model)
 
-    device = get_device()
-
-    vae = VAE(shape_input=(784,), latent_dimension=latent_dimension)
-    vae = vae.to(device)
-
-    optimizer = torch.optim.Adam(vae.parameters(), lr=learning_rate)
-
-    # Training
-    for epoch in range(epochs):
-        running_loss = 0.0
-
-        for i, (inputs, labels) in enumerate(train_loader):  # noqa
-            inputs = inputs.to(device)
-
-            optimizer.zero_grad()
-            loss = vae.get_loss(inputs)
-            loss.backward()
-            optimizer.step()
-
-            running_loss += loss.item()
-            if i % verbose == verbose-1 or i+1 == len(train_loader):
-                print(f'[{epoch + 1}/{epochs}, {i + 1}/{len(train_loader)}] loss: {running_loss/(i):.3f}')
-
-    # Displaying the latent space
-    # vae.eval()
+    # Plotting some data
     with torch.no_grad():
-        zs = vae.get_z(train_dataset.data.float().to(device)).data.cpu().numpy()
-    targets = train_dataset.targets.cpu().numpy()
+        inputs = dataset.data.float()
+        zs_tensor = vae.get_z(inputs)
+
+        zs = zs_tensor.numpy()
+        original_image = inputs.numpy()
+        digits = dataset.targets.numpy()
+        reconstructed_image = vae.decode(zs_tensor).numpy()
+
+        random_inputs = torch.randn((64, latent_dimension))
+        random_images = vae.decode(random_inputs).numpy()
 
     fig, ax = plt.subplots()
-    scatter = ax.scatter(zs[:, 0], zs[:, 1], c=targets)
+    scatter = ax.scatter(zs[:, 0], zs[:, 1], c=digits)
     ax.set_xlim([-5, 5.5])
     ax.set_ylim([-5, 5])
     ax.legend(*scatter.legend_elements(), loc="lower right", title="Digits")
     plt.title('MNIST latent space')
+    plt.show()
+
+    index = 1
+    plt.imshow(original_image[index])
+    plt.show()
+    plt.imshow(reconstructed_image[index])
+    plt.show()
+
+    index = 1
+    plt.imshow(random_images[index])
     plt.show()
