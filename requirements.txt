@@ -3,3 +3,5 @@ numpy
 setuptools
 matplotlib
 torchvision
+plotly
+dash
