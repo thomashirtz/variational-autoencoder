@@ -2,11 +2,10 @@
 
 ![](dashboard.gif)
 
+## About
 Implementation of the vanilla Variational AutoEncoder using Pytorch.
 
 ## Usage
-
-
 
 ### Importing the module
 
