@@ -1,8 +1,9 @@
 import torch.utils.data
-import matplotlib.pyplot as plt
 from torchvision import datasets, transforms
 
-from variational_autoencoder import train
+from variational_autoencoder import get_vae
+from variational_autoencoder import plot_latent_space
+from variational_autoencoder import show_image
 
 
 if __name__ == '__main__':
@@ -20,11 +21,11 @@ if __name__ == '__main__':
     checkpoint_directory = '../checkpoints/'
     file_name = None  # 'vae.pt'
 
-    dataset = datasets.MNIST(root='../data/MNIST', download=download, train=True, transform=transforms.ToTensor())
+    dataset = datasets.MNIST(root='../data', download=download, train=True, transform=transforms.ToTensor())
 
-    vae = train(dataset=dataset, epochs=epochs, load_model=load_model, latent_dimension=latent_dimension,
-                learning_rate=learning_rate, batch_size=batch_size, seed=seed, verbose=verbose,
-                checkpoint_directory=checkpoint_directory, file_name=file_name, save_model=save_model)
+    vae = get_vae(dataset=dataset, epochs=epochs, load_model=load_model, latent_dimension=latent_dimension,
+                  learning_rate=learning_rate, batch_size=batch_size, seed=seed, verbose=verbose,
+                  checkpoint_directory=checkpoint_directory, file_name=file_name, save_model=save_model)
 
     # Plotting some data
     with torch.no_grad():
@@ -36,23 +37,15 @@ if __name__ == '__main__':
         digits = dataset.targets.numpy()
         reconstructed_image = vae.decode(zs_tensor).numpy()
 
-        random_inputs = torch.randn((64, latent_dimension))
+        random_inputs = torch.randn((batch_size, latent_dimension))
         random_images = vae.decode(random_inputs).numpy()
 
-    fig, ax = plt.subplots()
-    scatter = ax.scatter(zs[:, 0], zs[:, 1], c=digits)
-    ax.set_xlim([-5, 5.5])
-    ax.set_ylim([-5, 5])
-    ax.legend(*scatter.legend_elements(), loc="lower right", title="Digits")
-    plt.title('MNIST latent space')
-    plt.show()
+    plot_latent_space(zs, digits)
 
-    index = 1
-    plt.imshow(original_image[index])
-    plt.show()
-    plt.imshow(reconstructed_image[index])
-    plt.show()
+    index = 0
+    show_image(original_image, index, f'Original image n°{index}')
+    show_image(reconstructed_image, index, f'Reconstructed image n°{index}')
 
-    index = 1
-    plt.imshow(random_images[index])
-    plt.show()
+    index = 0
+    show_image(random_images, index, f'Random image generated n°{index}')
+
