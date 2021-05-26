@@ -24,7 +24,7 @@ def get_file_name(extension: str = '.pt', *arguments, **keyword_arguments) -> st
     return name + extension  # todo edit extension handling
 
 
-def get_vae(dataset: torch.utils.data.Dataset, epochs: int = 1, batch_size: int = 128, latent_dimension: int = 3,
+def get_vae(dataset: torch.utils.data.Dataset, num_epochs: int = 1, batch_size: int = 128, latent_dimension: int = 3,
             learning_rate: float = 0.001, verbose: int = 256, seed: Optional[int] = None, save_model: bool = True,
             load_model: bool = False, file_name: Optional[str] = None, checkpoint_directory: str = '../checkpoints/'):
 
@@ -49,7 +49,7 @@ def get_vae(dataset: torch.utils.data.Dataset, epochs: int = 1, batch_size: int 
         print(f'Start training {checkpoint_path}')
         optimizer = torch.optim.Adam(vae.parameters(), lr=learning_rate)
 
-        for epoch in range(epochs):
+        for epoch in range(num_epochs):
             running_loss = 0.0
 
             for i, (inputs, labels) in enumerate(train_loader):  # noqa
@@ -62,7 +62,7 @@ def get_vae(dataset: torch.utils.data.Dataset, epochs: int = 1, batch_size: int 
 
                 running_loss += loss.item()
                 if i % verbose == verbose-1 or i+1 == len(train_loader):
-                    print(f'Epoch: [{epoch + 1}/{epochs}] Batch: [{i + 1}/{len(train_loader)}] Loss: {running_loss/i:.3f}')
+                    print(f'Epoch: [{epoch + 1}/{num_epochs}] Batch: [{i + 1}/{len(train_loader)}] Loss: {running_loss / i:.3f}')
 
         if save_model:
             torch.save(vae.state_dict(), checkpoint_path)
