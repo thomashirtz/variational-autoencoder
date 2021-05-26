@@ -29,7 +29,7 @@ def get_app_dashboard(num_epochs: int = 20, file_name: Optional[str] = None, see
         zs = zs_tensor.numpy()
         original_image = inputs.numpy()
         reconstructed_image = vae.decode(zs_tensor).numpy()
-        digits = train_dataset.targets.numpy()#.astype('str')
+        digits = train_dataset.targets.numpy().astype('str')
 
     app = dash.Dash(__name__, external_stylesheets=[
         "https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap-grid.min.css"
@@ -41,7 +41,7 @@ def get_app_dashboard(num_epochs: int = 20, file_name: Optional[str] = None, see
 
     def get_latent_space_figure():
         figure = px.scatter_3d(x=zs[:, 0], y=zs[:, 1], z=zs[:, 2], color=digits, opacity=0.4)
-        figure.update_traces(marker={'size': 4}) # https://plotly.com/python/discrete-color/#color-sequences-in-plotly-express color_discrete_sequence=px.colors.sequential.Plasma_r
+        figure.update_traces(marker={'size': 4})  # https://plotly.com/python/discrete-color/#color-sequences-in-plotly-express color_discrete_sequence=px.colors.sequential.Plasma_r
         figure.update_yaxes(range=[-5, 5])
         figure.update_xaxes(range=[-5, 5])
         figure.update_layout(margin=dict(l=5, r=5, t=5, b=5), paper_bgcolor=plot_background_color)
