@@ -11,7 +11,7 @@ parser = argparse.ArgumentParser(
     usage='Use "python variational-autoencoder --help" for more information'
 )
 parser.add_argument(
-    '--file_name', default=None, type=str, metavar='',
+    '--file_name', default=default_file_name, type=str, metavar='',
     help='Name used for loading the model\'s weights (default: None)'
 )
 parser.add_argument(
@@ -25,7 +25,7 @@ parser.add_argument(
 
 
 args = parser.parse_args()
-app = get_app_dashboard(epochs=args.epochs, file_name=args.file_name, seed=args.seed)
+app = get_app_dashboard(num_epochs=args.num_epochs, file_name=args.file_name, seed=args.seed)
 
 
 if __name__ == "__main__":
