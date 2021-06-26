@@ -1,13 +1,13 @@
-import numpy as np
-import torch.utils.data
 from typing import Optional
+import pathlib
+import numpy as np
+
+import torch.utils.data
 from torchvision import datasets
 from torchvision import transforms
-import pathlib
-
-import plotly.express as px
 
 import dash
+import plotly.express as px
 import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 import dash_html_components as html
@@ -16,7 +16,12 @@ from dash.dependencies import Input, Output
 from variational_autoencoder import get_vae
 
 
-def get_app_dashboard(num_epochs: int = 20, file_name: Optional[str] = None, seed: Optional[int] = None, download: bool = True):
+def get_app_dashboard(
+        num_epochs: int = 20,
+        file_name: Optional[str] = None,
+        seed: Optional[int] = None,
+        download: bool = True
+):
 
     mnist_path = pathlib.Path(__file__).parents[1].absolute() / 'data'  # todo change in the future
     train_dataset = datasets.MNIST(root=mnist_path, download=download, train=True, transform=transforms.ToTensor())
