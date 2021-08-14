@@ -24,7 +24,7 @@ The `get_vae` function takes as input a torch dataset among other arguments,
 Examples of 
 
 ### MNIST Dashboard 
-A dashboard was made for the MNIST dataset using Plotly and Dash. It is located in the __main__.py
+A dashboard was made for the MNIST dataset using Plotly and Dash. It is located in the `__main__.py`
 ```
 python3 variational-autoencoder
 ```
