@@ -21,7 +21,7 @@ vae = get_vae(dataset=dataset)
 ```
 
 The `get_vae` function takes as input a torch dataset among other arguments, 
-Examples of 
+Examples of utilization of this function are present in the `tests` folder.
 
 ### MNIST Dashboard 
 A dashboard was made for the MNIST dataset using Plotly and Dash. It is located in the `__main__.py`
